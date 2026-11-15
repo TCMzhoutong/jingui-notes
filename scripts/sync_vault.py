@@ -7,6 +7,7 @@ Quartz's content directory. Run this again after editing notes in Obsidian.
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import re
 import shutil
@@ -158,11 +159,16 @@ def main() -> None:
         shutil.copy2(vault / path, destination)
 
     title = "邓珍本金匮要略全释"
-    index = ["---", f"title: {title}", "---", "", "以《邓珍本金匮要略全释》第一至第九章为阅读入口。", "",
-             "点击章节阅读原文与注解；文中的双链可跳转，鼠标悬停可预览关联笔记。", "", "## 目录", ""]
-    for path in seeds:
-        index.append(f"- [[{path.with_suffix('').as_posix()}|{path.stem}]]")
-    index.append("")
+    index = ["---", f"title: {title}", "---", "", '<div class="reading-home">',
+             '<p class="reading-home-kicker">金匮要略 · 前九篇</p>',
+             '<p class="reading-home-lead">以邓珍本为主线，循原文、注解与医案逐层阅读。</p>',
+             '<p class="reading-home-help">选择篇章开始。左侧目录还可浏览这些篇章涉及的医案、金匮注解与经典引文。</p>',
+             '<div class="chapter-grid">']
+    for number, path in enumerate(seeds, 1):
+        url = html.escape(path.with_suffix('').as_posix(), quote=True)
+        label = html.escape(path.stem[2:])
+        index.append(f'<a class="chapter-card" href="{url}"><span class="chapter-number">{number:02}</span><span class="chapter-name">{label}</span><span class="chapter-arrow">↗</span></a>')
+    index.extend(['</div>', '</div>', ''])
     (out / "index.md").write_text("\n".join(index), encoding="utf-8")
     previous_manifest.write_text(json.dumps([p.as_posix() for p in selected_sorted], ensure_ascii=False, indent=2), encoding="utf-8")
 

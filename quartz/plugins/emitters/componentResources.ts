@@ -9,6 +9,8 @@ import spaRouterScript from "../../components/scripts/spa.inline"
 import popoverScript from "../../components/scripts/popover.inline"
 // @ts-ignore
 import prefetchScript from "../../components/scripts/prefetch.inline"
+// @ts-ignore
+import readingNavigationScript from "../../components/scripts/readingNavigation.inline"
 import baseStyles from "../../styles/base.scss"
 import customStyles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
@@ -96,6 +98,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.afterDOMLoaded.push(popoverScript)
     componentResources.css.push(popoverStyle)
   }
+  componentResources.afterDOMLoaded.push(readingNavigationScript)
 
   // Config values are written into the generated scripts as JSON string literals (`<` escaped),
   // never spliced into code or nested string templates (#2571).

@@ -14,6 +14,10 @@ node quartz/bootstrap-cli.mjs build
 if ($LASTEXITCODE -ne 0) { throw '网页构建失败。' }
 python scripts/fix_tag_links.py
 if ($LASTEXITCODE -ne 0) { throw '标签链接修复失败。' }
+python scripts/repair_fragments.py
+if ($LASTEXITCODE -ne 0) { throw '段落链接修复失败。' }
+python scripts/audit_anchors.py
+if ($LASTEXITCODE -ne 0) { throw '有段落链接未能定位，请检查输出。' }
 
 if ($PreviewOnly) {
     Write-Host '本地网页已生成在 public 目录。运行 python scripts/preview.py 预览。'

@@ -27,6 +27,8 @@ jobs:
       - run: node quartz/bootstrap-cli.mjs plugin install --from-config
       - run: node quartz/bootstrap-cli.mjs build
       - run: python scripts/fix_tag_links.py
+      - run: python scripts/repair_fragments.py
+      - run: python scripts/audit_anchors.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
