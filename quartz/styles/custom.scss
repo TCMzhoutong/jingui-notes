@@ -5,6 +5,13 @@
   --headerFont: var(--bodyFont);
   --titleFont: var(--bodyFont);
   --codeFont: Consolas, "Noto Sans Mono", monospace;
+  --reading-panel: #fafafa;
+  --reading-panel-hover: #f3f3f3;
+}
+
+:root[saved-theme="dark"] {
+  --reading-panel: #2a2a2a;
+  --reading-panel-hover: #353535;
 }
 
 body {
@@ -53,6 +60,81 @@ body {
 
 .page .center article blockquote {
   border-left-color: var(--secondary);
+}
+
+.page .center article .callout[data-callout^="解"] {
+  margin: 0.55rem 0;
+  padding: 0;
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  background: var(--reading-panel);
+  box-shadow: 0 1px 3px rgba(20, 22, 27, 0.05);
+  --color: var(--dark);
+}
+
+.page .center article .callout[data-callout^="解"] > .callout-title {
+  align-items: center;
+  gap: 0;
+  padding: 0.5rem 0.85rem;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.page .center article .callout[data-callout^="解"] > .callout-title:hover {
+  background: var(--reading-panel-hover);
+}
+
+.page .center article .callout[data-callout^="解"] .callout-icon {
+  display: none;
+}
+
+.page .center article .callout[data-callout^="解"] .callout-title-inner {
+  flex: 1;
+  font-size: 0.88rem;
+  letter-spacing: 0.025em;
+}
+
+.page .center article .callout[data-callout^="解"] .callout-title-inner > p {
+  margin: 0;
+}
+
+.page .center article .callout[data-callout^="解"].is-collapsed > .callout-content {
+  display: none;
+}
+
+.page .center article .callout[data-callout^="解"] .fold-callout-icon {
+  --icon-size: 16px;
+  opacity: 0.65;
+}
+
+.page .center article .callout[data-callout^="解"]:not(.is-collapsed) {
+  background: var(--light);
+  border-color: color-mix(in srgb, var(--secondary) 28%, var(--lightgray));
+}
+
+.page .center article .callout[data-callout^="解"]:not(.is-collapsed) > .callout-title {
+  color: var(--secondary);
+  border-bottom: 1px solid var(--lightgray);
+}
+
+.page .center article .callout[data-callout^="解"]:not(.is-collapsed) .callout-title-inner > p {
+  color: var(--secondary);
+}
+
+.page .center article .callout[data-callout^="解"] .callout-content {
+  padding: 0 0.95rem;
+  font-size: 0.94rem;
+  line-height: 1.72;
+}
+
+.page .center article .callout[data-callout^="解"] .callout-content > :first-child {
+  margin-top: 0.7rem;
+}
+
+.page .center article .callout[data-callout^="解"] .callout-content > :last-child {
+  margin-bottom: 0.75rem;
 }
 
 .explorer-content .folder-container {

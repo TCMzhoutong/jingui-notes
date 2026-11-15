@@ -22,25 +22,25 @@ configuration:
       code: Consolas
     colors:
       lightMode:
-        light: "#fbfaf7"
-        lightgray: "#e4e0d8"
-        gray: "#8a8984"
-        darkgray: "#3d403c"
-        dark: "#202823"
-        secondary: "#276254"
-        tertiary: "#a66433"
-        highlight: rgba(39, 98, 84, 0.08)
-        textHighlight: "#fff23688"
+        light: "#ffffff"
+        lightgray: "#e6e6e6"
+        gray: "#949494"
+        darkgray: "#666666"
+        dark: "#1f1f1f"
+        secondary: "#2b74d8"
+        tertiary: "#1f63bd"
+        highlight: "#eaf2fe"
+        textHighlight: "#fff0d1"
       darkMode:
-        light: "#161618"
-        lightgray: "#393639"
-        gray: "#646464"
-        darkgray: "#d4d4d4"
-        dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#b3aa0288"
+        light: "#202020"
+        lightgray: "#343432"
+        gray: "#959595"
+        darkgray: "#bdbdbd"
+        dark: "#ececec"
+        secondary: "#7db4f7"
+        tertiary: "#9bc6fa"
+        highlight: "#24364b"
+        textHighlight: "#44351e"
   links:
     markdownLinkResolution: shortest
   contentIndex:

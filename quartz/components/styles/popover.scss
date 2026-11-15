@@ -25,9 +25,9 @@
 
   & > .popover-inner {
     position: relative;
-    width: 30rem;
-    max-height: 20rem;
-    padding: 0 1rem 1rem 1rem;
+    width: min(30rem, calc(100vw - 2rem));
+    max-height: min(24rem, calc(100vh - 2rem));
+    padding: 0;
     font-weight: initial;
     font-style: initial;
     line-height: normal;
@@ -35,8 +35,8 @@
     font-family: var(--bodyFont);
     border: 1px solid var(--lightgray);
     background-color: var(--light);
-    border-radius: 5px;
-    box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(20, 22, 27, 0.15);
     overflow: auto;
     overscroll-behavior: contain;
     white-space: normal;
@@ -69,6 +69,53 @@
   h1 {
     font-size: 1.5rem;
   }
+
+  .popover-preview-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--lightgray);
+    background: var(--light);
+    color: var(--dark);
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .popover-preview-body {
+    padding: 0.75rem 1rem 0.35rem;
+    color: var(--dark);
+    font-size: 0.91rem;
+    line-height: 1.65;
+
+    > :first-child { margin-top: 0; }
+    > :last-child { margin-bottom: 0; }
+    h1, h2, h3, h4, h5, h6 { font-size: 0.97rem; line-height: 1.5; }
+    p, li, blockquote { margin-block: 0.45rem; }
+    blockquote { padding-left: 0.75rem; border-left: 2px solid var(--lightgray); }
+    .callout { padding: 0.4rem 0.75rem; }
+    .callout-content { display: block; }
+    .callout-title { padding: 0.25rem 0; }
+    img { max-width: 100%; }
+  }
+
+  .popover-preview-label {
+    display: block;
+    color: var(--gray);
+    font-size: 0.78rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .popover-preview-open {
+    display: block;
+    padding: 0.55rem 1rem 0.7rem;
+    color: var(--secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .popover-preview-open:hover { text-decoration: underline; }
 
   visibility: hidden;
   opacity: 0;
