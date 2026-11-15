@@ -119,7 +119,7 @@ function renderReadingNavigation(scroll: boolean) {
 
 document.addEventListener("click", (event) => {
   const link = (event.target as Element)?.closest?.("a[href]") as HTMLAnchorElement | null
-  if (!link || link.dataset.noPopover === "true") return
+  if (!link || link.hasAttribute("data-no-popover")) return
   const destination = new URL(link.href)
   const basepath = document.body.dataset.basepath || ""
   if (destination.origin === location.origin && destination.pathname.startsWith(basepath + "/")) {

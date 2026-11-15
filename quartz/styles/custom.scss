@@ -58,6 +58,11 @@ body {
   letter-spacing: 0;
 }
 
+// Headings keep their IDs for incoming links; the inline self-link icon is redundant here.
+.page .center article :is(h1, h2, h3, h4, h5, h6) > a[role="anchor"] {
+  display: none;
+}
+
 .page .center article blockquote {
   border-left-color: var(--secondary);
 }

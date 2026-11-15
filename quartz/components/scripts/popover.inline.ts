@@ -16,7 +16,7 @@ function appendExcerpt(container: HTMLElement, element: Element) {
   const clone = element.cloneNode(true) as HTMLElement
   clone.querySelectorAll("[id]").forEach((node) => node.removeAttribute("id"))
   clone.removeAttribute("id")
-  clone.querySelectorAll("script, iframe, button").forEach((node) => node.remove())
+  clone.querySelectorAll('script, iframe, button, a[role="anchor"]').forEach((node) => node.remove())
   if ((clone.textContent?.length || 0) > 1000) {
     const excerpt = document.createElement("p")
     excerpt.textContent = `${clone.textContent?.trim().slice(0, 1000)}…`
@@ -100,11 +100,13 @@ function buildTextPreview(
     blocks.slice(0, 3).forEach((element) => appendExcerpt(body, element))
   }
 
-  const open = document.createElement("a")
-  open.className = "popover-preview-open"
-  open.href = link.href
-  open.textContent = hash ? "打开对应段落 →" : from ? "查看引用原文 →" : "打开全文 →"
-  container.appendChild(open)
+  if (!hash) {
+    const open = document.createElement("a")
+    open.className = "popover-preview-open"
+    open.href = link.href
+    open.textContent = from ? "查看引用原文 →" : "打开全文 →"
+    container.appendChild(open)
+  }
   return true
 }
 
@@ -113,9 +115,12 @@ async function mouseEnterHandler(
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
   const link = (activeAnchor = this)
-  if (link.dataset.noPopover === "true") {
+  if (link.hasAttribute("data-no-popover")) {
     return
   }
+
+  const hoveredUrl = new URL(link.href)
+  if (hoveredUrl.pathname === location.pathname && hoveredUrl.hash) return
 
   async function setPosition(popoverElement: HTMLElement) {
     const { x, y } = await computePosition(link, popoverElement, {
@@ -215,7 +220,7 @@ function clearActivePopover() {
 }
 
 function setupPopovers() {
-  const links = [...document.querySelectorAll("a.internal")] as HTMLAnchorElement[]
+  const links = [...document.querySelectorAll("a.internal:not([data-no-popover])")] as HTMLAnchorElement[]
   for (const link of links) {
     link.addEventListener("mouseenter", mouseEnterHandler)
     link.addEventListener("mouseleave", clearActivePopover)
