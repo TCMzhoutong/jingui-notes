@@ -2,6 +2,69 @@
 // paragraph in the source note that actually links to the current note.
 let returnTo: { url: string; title: string } | null = null
 let marked: HTMLElement | null = null
+const calloutMemory = new Map<string, Record<string, boolean>>()
+
+function calloutStorageKey(): string {
+  return `jingui-callouts:${document.body.dataset.slug || location.pathname}`
+}
+
+function savedCallouts(): Record<string, boolean> {
+  const storageKey = calloutStorageKey()
+  const historyState = history.state?.jinguiCallouts
+  if (historyState && typeof historyState === "object" && !Array.isArray(historyState)) {
+    return historyState
+  }
+  try {
+    const value = JSON.parse(sessionStorage.getItem(storageKey) || "{}")
+    if (value && typeof value === "object" && !Array.isArray(value)) return value
+  } catch {}
+  return calloutMemory.get(storageKey) || {}
+}
+
+function rememberCallout(callout: HTMLElement) {
+  const key = callout.dataset.readingCalloutKey
+  if (!key) return
+  const storageKey = calloutStorageKey()
+  const state = savedCallouts()
+  state[key] = !callout.classList.contains("is-collapsed")
+  calloutMemory.set(storageKey, state)
+  try {
+    history.replaceState({ ...(history.state || {}), jinguiCallouts: state }, "")
+  } catch {}
+  try {
+    sessionStorage.setItem(storageKey, JSON.stringify(state))
+  } catch {}
+}
+
+function restoreCallouts() {
+  const body = article()
+  if (!body) return
+  const state = savedCallouts()
+  const occurrences = new Map<string, number>()
+  body.querySelectorAll<HTMLElement>(".callout.is-collapsible").forEach((callout, index) => {
+    let previous = callout.previousElementSibling
+    while (previous && !/^H[1-6]$/.test(previous.tagName)) previous = previous.previousElementSibling
+    const section = (previous as HTMLElement | null)?.id || `section-${index}`
+    const type = callout.dataset.callout || "note"
+    const base = `${section}:${type}`
+    const count = occurrences.get(base) || 0
+    occurrences.set(base, count + 1)
+    const key = `${base}:${count}`
+    callout.dataset.readingCalloutKey = key
+    if (typeof state[key] !== "boolean") return
+    const collapsed = !state[key]
+    callout.classList.toggle("is-collapsed", collapsed)
+    const content = callout.querySelector<HTMLElement>(":scope > .callout-content")
+    if (content) content.style.gridTemplateRows = collapsed ? "0fr" : "1fr"
+  })
+}
+
+document.addEventListener("click", (event) => {
+  const title = (event.target as Element)?.closest?.(
+    ".center article .callout.is-collapsible > .callout-title",
+  )
+  if (title?.parentElement) rememberCallout(title.parentElement)
+})
 
 function article(): HTMLElement | null {
   return document.querySelector(".center article")
@@ -129,9 +192,13 @@ document.addEventListener("click", (event) => {
 }, true)
 
 document.addEventListener("nav", () => {
+  restoreCallouts()
   openMainDirectory()
   addBacklinkContexts()
   renderReadingNavigation(true)
 })
+
+document.addEventListener("render", restoreCallouts)
+window.addEventListener("pageshow", restoreCallouts)
 
 window.addEventListener("hashchange", () => renderReadingNavigation(true))
