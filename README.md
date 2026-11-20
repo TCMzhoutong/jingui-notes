@@ -35,7 +35,15 @@ GitHub Actions 会生成并部署网页。访客只能阅读和使用链接、�
 
 ## 日常更新
 
-在 Obsidian 中正常修改本地笔记后运行：
+在 Obsidian 中正常修改本地笔记后，可先查看哪些文件需要更新：
+
+```powershell
+python scripts/watch_vault.py --once
+```
+
+如果想在写笔记时持续看到新增、修改、删除的文件，可在一个 PowerShell 窗口运行 `python scripts/watch_vault.py`；按 Ctrl+C 停止。它会同时列出哪些变化属于当前网站的发布范围，不会自动上传。只有启动该程序且电脑保持运行时才会实时监测。
+
+确认待发布文件后运行：
 
 ```powershell
 ./scripts/发布更新.ps1

@@ -7,6 +7,7 @@ Quartz's content directory. Run this again after editing notes in Obsidian.
 from __future__ import annotations
 
 import argparse
+import filecmp
 import html
 import json
 import re
@@ -130,33 +131,49 @@ def main() -> None:
                 unresolved.append({"source": path.as_posix(), "link": ref, "reason": problem})
 
     selected_sorted = sorted(selected, key=lambda p: key(p.as_posix()))
+    out = args.out.resolve()
+    previous_manifest = Path(__file__).resolve().parent / "published-files.json"
+    previous = set(json.loads(previous_manifest.read_text(encoding="utf-8"))) if previous_manifest.exists() else set()
+    current = {p.as_posix() for p in selected_sorted}
+    added = [p.as_posix() for p in selected_sorted if p.as_posix() not in previous or not (out / p).is_file()]
+    modified = [p.as_posix() for p in selected_sorted
+                if p.as_posix() in previous and (out / p).is_file()
+                and not filecmp.cmp(vault / p, out / p, shallow=False)]
+    removed = sorted(previous - current, key=key)
     report = {
         "source_vault": str(vault),
         "seed_chapters": [p.as_posix() for p in seeds],
         "selected_count": len(selected_sorted),
         "selected_by_extension": dict(Counter(p.suffix.lower() for p in selected_sorted)),
         "selected_files": [p.as_posix() for p in selected_sorted],
+        "changes": {
+            "new": added,
+            "modified": modified,
+            "removed": removed,
+            "unchanged_count": len(selected_sorted) - len(added) - len(modified),
+        },
         "unresolved_count": len(unresolved),
         "unresolved_links": unresolved,
     }
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Selected {len(selected_sorted)} files from {len(paths)} vault files; {len(unresolved)} unresolved links")
+    print(f"Changes: {len(added)} new, {len(modified)} modified, {len(removed)} removed")
+    for label, names in (("NEW", added), ("MODIFIED", modified), ("REMOVED", removed)):
+        for name in names:
+            print(f"  {label}: {name}")
     if args.dry_run:
         return
 
-    out = args.out.resolve()
     if out == vault or vault in out.parents:
         parser.error("Output must not be inside the source vault")
-    previous_manifest = Path(__file__).resolve().parent / "published-files.json"
-    if previous_manifest.exists():
-        for relative in json.loads(previous_manifest.read_text(encoding="utf-8")):
-            old = out / relative
-            if old.is_file():
-                old.unlink()
-    for path in selected_sorted:
-        destination = out / path
+    for relative in removed:
+        old = (out / relative).resolve()
+        if old.is_relative_to(out) and old.is_file():
+            old.unlink()
+    for relative in added + modified:
+        destination = out / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(vault / path, destination)
+        shutil.copy2(vault / relative, destination)
 
     title = "邓珍本金匮要略全释"
     index = ["---", f"title: {title}", "---", "", '<div class="reading-home">',
